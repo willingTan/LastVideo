@@ -14,6 +14,7 @@ using LastVideo.Models;
 using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Data;
 using Windows.Foundation;
+using Windows.UI.Xaml.Controls;
 
 namespace LastVideo
 {
@@ -46,19 +47,26 @@ namespace LastVideo
            
             var timestamp = DateTime.Now.Ticks.ToString();
             var hash = CreatHash(timestamp);
-            
+            //构建我的url
             string url = String.Format("http://route.showapi.com/255-1?showapi_appid=38562&type=41&title=&page=&showapi_sign=bd6f94f1133d4055936934ba4e21ea76&ts={0}&hash={1}",timestamp,hash);
 
+            try { 
             HttpClient http = new HttpClient();
             var response = await http.GetAsync(url);
             var json = await response.Content.ReadAsStringAsync();
-
+            //进行反序列化
             var serializer = new DataContractJsonSerializer(typeof(RootObject));
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
             var result=(RootObject)serializer.ReadObject(ms);
             return result;
+            }
+            catch
+            {
+                displayNoWifiDialog();
+                return null;
+            }
         }
-
+        //建立哈希表
         private static string CreatHash(string timestamp)
         {
             
@@ -67,7 +75,7 @@ namespace LastVideo
             return hashedmassage;
                  
         }
-
+        //这个是。。。不太清楚
         private static string ComputeMD5(string str)
         {
             var alg = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
@@ -75,6 +83,17 @@ namespace LastVideo
             var hashed = alg.HashData(buff);
             var res = CryptographicBuffer.EncodeToHexString(hashed);
             return res;       
+        }
+        //无网络测试
+        private static async void displayNoWifiDialog()
+        {
+            ContentDialog noWifiDialog = new ContentDialog()
+            {
+                Title = "网络异常",
+                Content = "请检查网络是否连接",
+                PrimaryButtonText = "确定"
+            };
+            ContentDialogResult result = await noWifiDialog.ShowAsync();
         }
 
         public IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)

@@ -11,6 +11,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Media;
 using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -19,6 +20,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
+
 //“空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 上有介绍
 
 namespace LastVideo
@@ -26,56 +28,58 @@ namespace LastVideo
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class MainPage : Page, INotifyPropertyChanged
+    public sealed partial class MainPage : Page
     {
         public ObservableCollection<Contentlist> Items { get; set; }
 
-        public bool IsPullRefresh
-        {
-            get
-            {
-                return _isPullRefresh;
-            }
+        //public bool IsPullRefresh
+        //{
+        //    get
+        //    {
+        //        return _isPullRefresh;
+        //    }
 
-            set
-            {
-                _isPullRefresh = value;
-                OnPropertyChanged(nameof(IsPullRefresh));
-            }
-        }
+        //    set
+        //    {
+        //        _isPullRefresh = value;
+        //        OnPropertyChanged(nameof(IsPullRefresh));
+        //    }
+        //}
 
-        bool _isPullRefresh = false;
-        public event PropertyChangedEventHandler PropertyChanged;
-        
+        //bool _isPullRefresh = false;
+        //public event PropertyChangedEventHandler PropertyChanged;
 
-        public void OnPropertyChanged(string name)
-        {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
 
-        private void scrollViewer_Loaded(object sender, RoutedEventArgs e)
-        {
-        }
-        //下拉刷新，我放弃了
+        //public void OnPropertyChanged(string name)
+        //{
+        //    this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        //}
 
-        private async void scrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
-        {
-            var sv = sender as ScrollViewer;
+        //private void scrollViewer_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //}
+        ////下拉刷新，我放弃了
 
-            if (!e.IsIntermediate)
-            {
-                if (sv.VerticalOffset == 0.0)
-                {
-                    IsPullRefresh = true;
-                    await Task.Delay(2000);
-                    sv.ChangeView(null, 30, null);
-                }
-                IsPullRefresh = false;
-            }
-        }
-        
+        //private async void scrollViewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        //{
+        //    var sv = sender as ScrollViewer;
+
+        //    if (!e.IsIntermediate)
+        //    {
+        //        if (sv.VerticalOffset == 0.0)
+        //        {
+        //            IsPullRefresh = true;
+        //            await Task.Delay(2000);
+        //            sv.ChangeView(null, 30, null);
+        //        }
+        //        IsPullRefresh = false;
+        //    }
+        //}
+
+        public string myuri { get; set; }
+        public string time { get; set; }
         public ObservableCollection<Contentlist> Examples { get; set; }
-        SystemMediaTransportControls systemControls;
+        //SystemMediaTransportControls systemControls;
         //MediaElement myplayer = new MediaElement();
         public MainPage()
         {
@@ -84,9 +88,10 @@ namespace LastVideo
             view.TitleBar.BackgroundColor = Colors.Black;
             view.TitleBar.ButtonBackgroundColor = Colors.Black;
             Examples = new ObservableCollection<Contentlist>();
-            systemControls = SystemMediaTransportControls.GetForCurrentView();
-            //systemControls.ButtonPressed += SystemControls_ButtonPressed;
-
+            ApplicationView.PreferredLaunchViewSize = new Size(1000, 600);
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+            //    systemControls = SystemMediaTransportControls.GetForCurrentView();
+            //    systemControls.ButtonPressed += SystemControls_ButtonPressed;
         }
 
         //关联不上啊，我的transportcontrol GG了,只有用封装好的了
@@ -143,23 +148,137 @@ namespace LastVideo
         //        default:
         //            break;
         //    }
-
         //}
 
+        //private string ItemToKeyHandler(object item)
+        //{
+        //    Item dataItem = item as Item;
+        //    if (dataItem == null) return null;
+
+        //    return dataItem.Id.ToString();
+        //}
+
+        //public static string GetRelativeScrollPosition(ListViewBase listViewBase, ListViewItemToKeyHandler itemToKeyHandler)
+        //{
+
+        //} //怎么感觉所有方法都不行0.0,一定用了假的控件
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             mypro.IsActive = true;
             mypro.Visibility = Visibility.Visible;
-
-            await Videoproporty.Content(Examples);
+            try
+                { 
+                 await Videoproporty.Content(Examples);
+                 if (Examples.Count == 0) displayNoWifiDialog();
+                }
+            catch
+            {
+                //先不急
+            }
             
             mypro.IsActive = false;
             mypro.Visibility = Visibility.Collapsed;
         }
 
+        //
+        private void MyVideo_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            //GetSelectedItemFromListView(MyVideo);
+            //无法获取点击item的值
+            //if(a!=null)
+            //{
+            //    string uri;
+            //    uri = a.ToString();
+            //}
+            myplayer.Visibility = Visibility.Visible;
+            try
+            {
+                Contentlist a = MyVideo.SelectedItem as Contentlist;
+                myuri = a.video_uri;
+                myplayer.Source = new Uri(myuri);
+
+                //不急
+            }
+            catch
+            {
+                //先不急
+            }
+        }
+
+        //private object GetSelectedItemFromListView(ListView listView)
+        //{
+        //    return listView.SelectedItems[0];
+        //}
+        //
+        private static async void displayNoWifiDialog()
+        {
+            ContentDialog noWifiDialog = new ContentDialog()
+            {
+                Title = "网络异常",
+                Content = "请检查网络是否连接",
+                PrimaryButtonText = "确定"
+            };
+            ContentDialogResult result = await noWifiDialog.ShowAsync();
+        }
+        private void gettime()//获取时长还是没有成功
+        {
+            //time=MediaElement.NaturalDuration.HasTimeSpan;
+        }
         //private void myplayer_MediaOpened(object sender, RoutedEventArgs e)
         //{
+        //}
+
+        //private void SystemControls_ButtonPressed(SystemMediaTransportControls sender, SystemMediaTransportControlsButtonPressedEventArgs args)
+        //{
+        //    switch (args.Button)
+        //    {
+        //        case SystemMediaTransportControlsButton.Play:
+        //            PlayMedia();
+        //            break;
+        //        case SystemMediaTransportControlsButton.Pause:
+        //            PauseMedia();
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+
+        //async void PlayMedia()
+        //{
+        //    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+        //    {
+        //        myplayer.Play();
+        //    });
+        //}
+
+        //async void PauseMedia()
+        //{
+        //    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+        //    {
+        //        myplayer.Pause();
+        //    });
+        //}
+
+        //private void myplayer_CurrentStateChanged(object sender, RoutedEventArgs e)
+        //{
+        //    switch (myplayer.CurrentState)
+        //    {
+        //        case MediaElementState.Playing:
+        //            systemControls.PlaybackStatus = MediaPlaybackStatus.Playing;
+        //            break;
+        //        case MediaElementState.Paused:
+        //            systemControls.PlaybackStatus = MediaPlaybackStatus.Paused;
+        //            break;
+        //        case MediaElementState.Stopped:
+        //            systemControls.PlaybackStatus = MediaPlaybackStatus.Stopped;
+        //            break;
+        //        case MediaElementState.Closed:
+        //            systemControls.PlaybackStatus = MediaPlaybackStatus.Closed;
+        //            break;
+        //        default:
+        //            break;
+        //    }
         //}
     }
 }

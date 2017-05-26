@@ -10,7 +10,11 @@
     mc:Ignorable="d">
 
     <Grid>
-        <ListView Name="MyVideo" ItemsSource="{x:Bind Examples}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ListView IsItemClickEnabled="True" Grid.Column="0" ItemClick="MyVideo_ItemClick" Name="MyVideo" ItemsSource="{x:Bind Examples}">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:Contentlist">
                     <Grid>
@@ -36,14 +40,15 @@
                         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="20" FontFamily="SimHei" Text="{x:Bind text}" TextWrapping="Wrap" />
 
                         <StackPanel Grid.Row="2" Grid.ColumnSpan="3" >
-                            <MediaElement x:Name="myplayer"
-                                          AreTransportControlsEnabled="True"
+                            <MediaElement AreTransportControlsEnabled="False"
                                           AutoPlay="False"
-                                            Source="{x:Bind video_uri}">
+                                          Source="{x:Bind video_uri}">
                             </MediaElement>
                         </StackPanel>
 
                         <RelativePanel Grid.Row="3" Grid.ColumnSpan="3" >
+                            <TextBlock Text="视频时长："  RelativePanel.AlignLeftWithPanel="True"/>
+                            <TextBlock Margin="75,0,0,0" Text="{x:Bind videotime}"/>
                             <Image  Margin="50,20,70,10" Name="xiazai" RelativePanel.AlignRightWithPanel="True"  Width="20" Height="20" Source="assets/lishi.png" />
                             <Image  Margin="0,20,50,10" Name="lishi" Width="20" Height="20" RelativePanel.LeftOf="xiazai"  Source="assets/xiazai.png" />
                         </RelativePanel>
@@ -60,25 +65,33 @@
                                Name="hate"
                                Margin="0,0,0,20"
                                RelativePanel.AlignHorizontalCenterWithPanel="True"/>
-                            <TextBlock Margin="0,0,0,20" RelativePanel.RightOf="hate" Text="{x:Bind hate}" />
+                            <TextBlock Margin="10,0,0,20" RelativePanel.RightOf="hate" Text="{x:Bind hate}" />
                             <Image Source="assets/share.png"
                                Height="20" Width="20"
                                Name="share"
                                Margin="0,0,10,20"
                                RelativePanel.AlignRightWithPanel="True"/>
                         </RelativePanel>
-                        <ScrollViewer x:Name="scrollViewer"
-                                      Loaded="scrollViewer_Loaded"
-                                      ViewChanged="scrollViewer_ViewChanged"
-                                      HorizontalAlignment="Left"
-                                      Visibility="Collapsed"
-                                      Grid.ColumnSpan="3"
-                                      Grid.RowSpan="5"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <ProgressRing Name="mypro" Width="50" Height="50" 
+        <Grid Grid.Column="1">
+            <Image Source="assets/D.jpg" Stretch="Fill"/>
+            <MediaElement
+            Visibility="Collapsed"
+            AreTransportControlsEnabled="True"
+            Grid.Column="1"
+            x:Name="myplayer" 
+            AutoPlay="False">
+        </MediaElement>
+        </Grid>
+        <ProgressRing  Grid.Column="0"
+                      Name="mypro" Width="50" Height="50" 
+                      Foreground="Black" HorizontalAlignment="Center" 
+                      VerticalAlignment="Center"/>
+        <ProgressRing  Grid.Column="1"
+                      Name="mypro1" Width="50" Height="50" 
                       Foreground="Black" HorizontalAlignment="Center" 
                       VerticalAlignment="Center"/>
     </Grid>

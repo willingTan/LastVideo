@@ -47,7 +47,6 @@ namespace LastVideo.Models
         public string create_time { get; set; }
 
     }
-
     //[DataContract]
     public class Pagebean
     {
@@ -56,6 +55,8 @@ namespace LastVideo.Models
 
         //[DataMember]
         public List<Contentlist> contentlist { get; set; }
+
+        public Contentlist myneed { get; set; }   
 
         //[DataMember]
         public int currentPage { get; set; }

@@ -100,6 +100,9 @@
     </Compile>
     <Compile Include="Models\Proportis.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Videoplayer.xaml.cs">
+      <DependentUpon>Videoplayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Videoproporty.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +112,7 @@
     <None Include="LastVideo_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\D.jpg" />
     <Content Include="Assets\hate.png" />
     <Content Include="Assets\lishi.png" />
     <Content Include="Assets\love.png" />
@@ -133,6 +137,10 @@
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Videoplayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
