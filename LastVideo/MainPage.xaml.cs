@@ -28,9 +28,9 @@ namespace LastVideo
     /// <summary>
     /// 可用于自身或导航至 Frame 内部的空白页。
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage : Page,INotifyPropertyChanged
     {
-        public ObservableCollection<Contentlist> Items { get; set; }
+        //public ObservableCollection<Contentlist> Items { get; set; }
 
         //public bool IsPullRefresh
         //{
@@ -79,8 +79,23 @@ namespace LastVideo
         public string myuri { get; set; }
         public string time { get; set; }
         public ObservableCollection<Contentlist> Examples { get; set; }
+        public ObservableCollection<Contentlist> Examples2 { get; set; }
         //SystemMediaTransportControls systemControls;
         //MediaElement myplayer = new MediaElement();
+        public bool IsPullRefresh
+        {
+            get
+            {
+                return _isPullRefresh;
+            }
+            set
+            {
+                _isPullRefresh = value;
+                OnPropertyChanged(nameof(IsPullRefresh));
+            }
+        }
+        bool _isPullRefresh = false;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -88,12 +103,24 @@ namespace LastVideo
             view.TitleBar.BackgroundColor = Colors.Black;
             view.TitleBar.ButtonBackgroundColor = Colors.Black;
             Examples = new ObservableCollection<Contentlist>();
+            Examples2 = new ObservableCollection<Contentlist>();
             ApplicationView.PreferredLaunchViewSize = new Size(1000, 600);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
-            //    systemControls = SystemMediaTransportControls.GetForCurrentView();
-            //    systemControls.ButtonPressed += SystemControls_ButtonPressed;
-        }
+			//    systemControls = SystemMediaTransportControls.GetForCurrentView();
+			//    systemControls.ButtonPressed += SystemControls_ButtonPressed;
+			//for(int i=0;i<20;i++)
+			//{
+			//    Examples.Add(Examples[i]);
+			//}
+		}
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged(string name)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+        
         //关联不上啊，我的transportcontrol GG了,只有用封装好的了
         //哇，好气啊0.0，功能做不完了
 
@@ -164,24 +191,31 @@ namespace LastVideo
         //} //怎么感觉所有方法都不行0.0,一定用了假的控件
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            mypro.IsActive = true;
-            mypro.Visibility = Visibility.Visible;
+		{
+			mypro1.IsActive = true;
+			mypro1.Visibility = Visibility.Visible;
+			jiazai.Visibility = Visibility.Visible;
+			await Task.Delay(1000);
             try
-                { 
-                 await Videoproporty.Content(Examples);
-                 if (Examples.Count == 0) displayNoWifiDialog();
+                {
+				await Videoproporty.Content(Examples);
+				jiazai.Visibility = Visibility.Collapsed;
+				mypro1.IsActive = false;
+				mypro1.Visibility = Visibility.Collapsed;
+				mypro.IsActive = true;
+				mypro.Visibility = Visibility.Visible;
+				await Task.Delay(500);
+				scrollviewer.ChangeView(null, 30, null);
+				if (Examples.Count == 0) displayNoWifiDialog();
                 }
             catch
             {
                 //先不急
             }
-            
+			delay.Visibility = Visibility.Collapsed;
             mypro.IsActive = false;
             mypro.Visibility = Visibility.Collapsed;
         }
-
-        //
         private void MyVideo_ItemClick(object sender, ItemClickEventArgs e)
         {
             //GetSelectedItemFromListView(MyVideo);
@@ -191,12 +225,12 @@ namespace LastVideo
             //    string uri;
             //    uri = a.ToString();
             //}
-            myplayer.Visibility = Visibility.Visible;
             try
             {
                 Contentlist a = MyVideo.SelectedItem as Contentlist;
                 myuri = a.video_uri;
                 myplayer.Source = new Uri(myuri);
+                myplayer.Visibility = Visibility.Visible;
 
                 //不急
             }
@@ -224,6 +258,41 @@ namespace LastVideo
         private void gettime()//获取时长还是没有成功
         {
             //time=MediaElement.NaturalDuration.HasTimeSpan;
+        }
+
+		//并没有发现这个有什么作用。。
+        //private void scrollviewer_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    scrollviewer.ChangeView(null, 30, null);
+        //}
+
+        private async void scrollviewer_ViewChanged(object sender, ScrollViewerViewChangedEventArgs e)
+        {
+            var sv = sender as ScrollViewer;
+            if(!e.IsIntermediate)
+            {
+                if(sv.VerticalOffset==0.0)
+                {
+                    IsPullRefresh = true;
+                    try
+                    {
+                        await Videoproporty.Content(Examples2);
+                        if (Examples2.Count == 0) displayNoWifiDialog();
+                    }
+                    catch
+                    {
+                        //先不急
+                    }
+                    await Task.Delay(2000);
+                    for (int i=0;i<5;i++)
+                    {
+                            if (Examples[0].create_time != Examples2[i].create_time) Examples.Insert(0, Examples2[i]);
+                            else break;
+                    }
+                    sv.ChangeView(null, 30, null);
+                }
+                IsPullRefresh = false;
+            }
         }
         //private void myplayer_MediaOpened(object sender, RoutedEventArgs e)
         //{
@@ -280,5 +349,6 @@ namespace LastVideo
         //            break;
         //    }
         //}
+
     }
 }

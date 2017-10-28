@@ -14,8 +14,11 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListView IsItemClickEnabled="True" Grid.Column="0" ItemClick="MyVideo_ItemClick" Name="MyVideo" ItemsSource="{x:Bind Examples}">
-            <ListView.ItemTemplate>
+        <ScrollViewer x:Name="scrollviewer" ViewChanged="scrollviewer_ViewChanged">
+            <StackPanel Orientation="Vertical">
+                <ProgressRing IsActive="{x:Bind IsPullRefresh,Mode=OneWay}" Height="30"></ProgressRing>
+                <ListView IsItemClickEnabled="True" Grid.Column="0" ItemClick="MyVideo_ItemClick" Name="MyVideo" ItemsSource="{x:Bind Examples}">
+                <ListView.ItemTemplate>
                 <DataTemplate x:DataType="data:Contentlist">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -76,6 +79,9 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+            </StackPanel>
+        </ScrollViewer>
+        <Grid Grid.Column="0" Background="White" x:Name="delay"></Grid>
         <Grid Grid.Column="1">
             <Image Source="assets/D.jpg" Stretch="Fill"/>
             <MediaElement
@@ -88,11 +94,21 @@
         </Grid>
         <ProgressRing  Grid.Column="0"
                       Name="mypro" Width="50" Height="50" 
-                      Foreground="Black" HorizontalAlignment="Center" 
+                      Foreground="Black"
                       VerticalAlignment="Center"/>
-        <ProgressRing  Grid.Column="1"
-                      Name="mypro1" Width="50" Height="50" 
-                      Foreground="Black" HorizontalAlignment="Center" 
-                      VerticalAlignment="Center"/>
+        <Grid Background="Black" x:Name="jiazai" Grid.ColumnSpan="2" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="115" />
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ProgressRing Grid.Row="2"
+                      Name="mypro1" Width="30" Height="30"
+                      Foreground="White" HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      />
+            <Image Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Source="assets/jiazaiyemian.png"></Image>
+        </Grid>
     </Grid>
 </Page>

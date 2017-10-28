@@ -45,10 +45,10 @@ namespace LastVideo
         public async static Task<RootObject> GetVideoContent()//异步方法
         {
            
-            var timestamp = DateTime.Now.Ticks.ToString();
-            var hash = CreatHash(timestamp);
+            //var timestamp = DateTime.Now.Ticks.ToString();
+            //var hash = CreatHash(timestamp);
             //构建我的url
-            string url = String.Format("http://route.showapi.com/255-1?showapi_appid=38562&type=41&title=&page=&showapi_sign=bd6f94f1133d4055936934ba4e21ea76&ts={0}&hash={1}",timestamp,hash);
+            string url = String.Format("http://route.showapi.com/255-1?showapi_appid=38562&type=41&title=&page=&showapi_sign=bd6f94f1133d4055936934ba4e21ea76");
 
             try { 
             HttpClient http = new HttpClient();
@@ -67,23 +67,23 @@ namespace LastVideo
             }
         }
         //建立哈希表
-        private static string CreatHash(string timestamp)
-        {
+        //private static string CreatHash(string timestamp)
+        //{
             
-            var tobehashed = timestamp;
-            var hashedmassage = ComputeMD5(tobehashed);
-            return hashedmassage;
+        //    var tobehashed = timestamp;
+        //    var hashedmassage = ComputeMD5(tobehashed);
+        //    return hashedmassage;
                  
-        }
-        //这个是。。。不太清楚
-        private static string ComputeMD5(string str)
-        {
-            var alg = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
-            IBuffer buff = CryptographicBuffer.ConvertStringToBinary(str, BinaryStringEncoding.Utf8);
-            var hashed = alg.HashData(buff);
-            var res = CryptographicBuffer.EncodeToHexString(hashed);
-            return res;       
-        }
+        //}
+        ////这个是。。。不太清楚
+        //private static string ComputeMD5(string str)
+        //{
+        //    var alg = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5);
+        //    IBuffer buff = CryptographicBuffer.ConvertStringToBinary(str, BinaryStringEncoding.Utf8);
+        //    var hashed = alg.HashData(buff);
+        //    var res = CryptographicBuffer.EncodeToHexString(hashed);
+        //    return res;       
+        //}
         //无网络测试
         private static async void displayNoWifiDialog()
         {

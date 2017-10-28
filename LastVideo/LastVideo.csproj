@@ -114,6 +114,7 @@
   <ItemGroup>
     <Content Include="Assets\D.jpg" />
     <Content Include="Assets\hate.png" />
+    <Content Include="Assets\jiazaiyemian.png" />
     <Content Include="Assets\lishi.png" />
     <Content Include="Assets\love.png" />
     <Content Include="Assets\myfirst.png" />
